@@ -19,7 +19,9 @@ import org.http4k.core.*
 import org.http4k.core.ContentType.Companion.TEXT_HTML
 import org.http4k.core.Method.GET
 import org.http4k.core.Status.Companion.OK
+import org.http4k.filter.DebuggingFilters
 import org.http4k.filter.DebuggingFilters.PrintRequest
+import org.http4k.filter.ServerFilters
 import org.http4k.format.Jackson
 import org.http4k.format.Jackson.json
 import org.http4k.lens.Query
@@ -50,6 +52,8 @@ val oauthProvider = OAuthProvider.google(
         Uri.of("http://localhost:9000/oauth/callback"),
         oAuthPersistence
 )
+val filters = DebuggingFilters.PrintRequestAndResponse().then(ServerFilters.CatchAll())
+
 val app: HttpHandler = routes(
     "/home" bind GET to {
         Response(OK).body("Welcome to Project Pulse")
@@ -96,7 +100,7 @@ val app: HttpHandler = routes(
             .with(Body.json().toLens() of Jackson.array(projects))
     }
 
-)
+).withFilter(filters)
 
 private fun jsonNodesProject(allProjects: List<Project>): MutableList<JsonNode> {
     val projects = mutableListOf<JsonNode>()
