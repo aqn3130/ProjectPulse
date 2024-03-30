@@ -21,7 +21,7 @@ class ProjectPulseTest {
 
     @Test
     fun `Ping test`() {
-        assertEquals(Response(OK).body("pong"), app(Request(GET, "/ping")))
+        assertEquals(Response(OK).body("Welcome to Project Pulse"), app(Request(GET, "/home")))
     }
     @Test
     fun `Check Hamkrest matcher for http4k work as expected`() {
