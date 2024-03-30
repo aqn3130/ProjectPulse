@@ -46,8 +46,9 @@ dependencies {
     jooqCodegen("org.flywaydb:flyway-core:9.2.1")
     jooqCodegen("org.postgresql:postgresql:42.5.1")
     // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
-    implementation("com.zaxxer:HikariCP:2.3.2")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.slf4j:slf4j-api:1.7.25")
+    implementation("org.postgresql:postgresql:42.5.1")
 
     testImplementation("org.http4k:http4k-testing-approval:${http4kVersion}")
     testImplementation("org.http4k:http4k-testing-hamkrest:${http4kVersion}")
