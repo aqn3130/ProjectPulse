@@ -1,14 +1,10 @@
 package com.projectpulse
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.projectpulse.formats.JacksonMessage
 import com.projectpulse.formats.jacksonMessageLens
 import com.projectpulse.models.HandlebarsViewModel
-import com.projectpulse.projects.config.db.db
-import com.projectpulse.projects.model.Project
-import com.projectpulse.projects.persistence.Jsonb
-import com.projectpulse.projects.persistence.ProjectDao
 import com.projectpulse.routes.ExampleContractRoute
+import com.projectpulse.routes.ProjectContract
 import org.http4k.client.JavaHttpClient
 import org.http4k.contract.bind
 import org.http4k.contract.contract
@@ -22,8 +18,6 @@ import org.http4k.core.Status.Companion.OK
 import org.http4k.filter.DebuggingFilters
 import org.http4k.filter.DebuggingFilters.PrintRequest
 import org.http4k.filter.ServerFilters
-import org.http4k.format.Jackson
-import org.http4k.format.Jackson.json
 import org.http4k.lens.Query
 import org.http4k.lens.int
 import org.http4k.routing.bind
@@ -91,31 +85,17 @@ val app: HttpHandler = routes(
             "/" bind GET to oauthProvider.authFilter.then { Response(OK).body("hello!") },
             "/callback" bind GET to oauthProvider.callback
     ),
-    "/projects" bind GET to {
-        val projectDao = ProjectDao()
-        val conn = db().connection()
-        val allProjects = projectDao.findAllProjects(conn)
-        val projects = jsonNodesProject(allProjects)
-        Response(Status.OK)
-            .with(Body.json().toLens() of Jackson.array(projects))
+    "/projects/api/v1" bind contract {
+        renderer = OpenApi3(ApiInfo("ProjectPulse API", "v1.0"))
+        //Return Swagger API definition under projects/api/vi/swagger.json
+        descriptionPath = "/swagger.json"
+        security = ApiKeySecurity(Query.int().required("apikey"), { it == 123})
+        routes += ProjectContract()
     }
 
 ).withFilter(filters)
 
-private fun jsonNodesProject(allProjects: List<Project>): MutableList<JsonNode> {
-    val projects = mutableListOf<JsonNode>()
-    for (item in allProjects) {
-        val jsonObject = Jackson.obj(
-            "id" to Jackson.number(item.id.value),
-            "projectname" to Jackson.string(item.projectname),
-            "metadata" to Jsonb.from(item.metadata.metadata),
-            "updatedAt" to Jackson.string(item.updatedAt.toString()),
-            "createdAt" to Jackson.string(item.createdAt.toString()),
-        )
-        projects.add(jsonObject)
-    }
-    return projects
-}
+
 fun main() {
     val printingApp: HttpHandler = PrintRequest().then(app)
 
