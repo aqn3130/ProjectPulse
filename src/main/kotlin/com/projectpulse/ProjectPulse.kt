@@ -16,7 +16,6 @@ import org.http4k.core.ContentType.Companion.TEXT_HTML
 import org.http4k.core.Method.GET
 import org.http4k.core.Status.Companion.OK
 import org.http4k.filter.DebuggingFilters
-import org.http4k.filter.DebuggingFilters.PrintRequest
 import org.http4k.filter.ServerFilters
 import org.http4k.lens.Query
 import org.http4k.lens.int
@@ -25,8 +24,6 @@ import org.http4k.routing.routes
 import org.http4k.security.InsecureCookieBasedOAuthPersistence
 import org.http4k.security.OAuthProvider
 import org.http4k.security.google
-import org.http4k.server.SunHttp
-import org.http4k.server.asServer
 import org.http4k.template.HandlebarsTemplates
 import org.http4k.template.viewModel
 
@@ -95,11 +92,3 @@ val app: HttpHandler = routes(
 
 ).withFilter(filters)
 
-
-fun main() {
-    val printingApp: HttpHandler = PrintRequest().then(app)
-
-    val server = printingApp.asServer(SunHttp(9001)).start()
-
-    println("Server started on " + server.port())
-}
