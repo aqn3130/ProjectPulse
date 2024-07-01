@@ -92,7 +92,7 @@ val app: HttpHandler = routes(
         security = ApiKeySecurity(Query.int().required("apikey"), { it == 123})
         routes += ProjectContract()
     },
-    "/projects/api/v1/create/" bind contract {
+    "/projects/api/v1/create" bind contract {
         renderer = OpenApi3(ApiInfo("ProjectPulse API", "v1.0"))
         //Return Swagger API definition under projects/api/vi/swagger.json
         descriptionPath = "/swagger.json"
