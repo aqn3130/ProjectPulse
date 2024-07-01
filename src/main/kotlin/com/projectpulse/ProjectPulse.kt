@@ -3,6 +3,7 @@ package com.projectpulse
 import com.projectpulse.formats.JacksonMessage
 import com.projectpulse.formats.jacksonMessageLens
 import com.projectpulse.models.HandlebarsViewModel
+import com.projectpulse.routes.CreateProjectContract
 import com.projectpulse.routes.ExampleContractRoute
 import com.projectpulse.routes.ProjectContract
 import org.http4k.client.JavaHttpClient
@@ -90,6 +91,13 @@ val app: HttpHandler = routes(
         descriptionPath = "/swagger.json"
         security = ApiKeySecurity(Query.int().required("apikey"), { it == 123})
         routes += ProjectContract()
+    },
+    "/projects/api/v1/create/" bind contract {
+        renderer = OpenApi3(ApiInfo("ProjectPulse API", "v1.0"))
+        //Return Swagger API definition under projects/api/vi/swagger.json
+        descriptionPath = "/swagger.json"
+        security = ApiKeySecurity(Query.int().required("apikey"), { it == 123})
+        routes += CreateProjectContract()
     }
 
 ).withFilter(filters)
