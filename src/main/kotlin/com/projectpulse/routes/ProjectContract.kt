@@ -28,7 +28,7 @@ object ProjectContract {
 
 private fun jsonNodesProject(allProjects: List<Project>): MutableList<JsonNode> {
     val projects = mutableListOf<JsonNode>()
-    for (item in allProjects) {
+    allProjects.forEach { item ->
         val jsonObject = Jackson.obj(
             "id" to Jackson.number(item.id.value),
             "projectname" to Jackson.string(item.projectname),
